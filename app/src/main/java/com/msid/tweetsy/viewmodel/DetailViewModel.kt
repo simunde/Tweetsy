@@ -1,5 +1,6 @@
 package com.msid.tweetsy.viewmodel
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.msid.tweetsy.repository.TweetRepository
@@ -11,7 +12,9 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class DetailViewModel  @Inject constructor(private val repository: TweetRepository) : ViewModel() {
+class DetailViewModel  @Inject constructor(
+    private val repository: TweetRepository,
+    private val saveStateHandle: SavedStateHandle) : ViewModel() {
 
     val tweet : StateFlow<List<Tweet>>
         get() = repository.tweets
@@ -19,7 +22,8 @@ class DetailViewModel  @Inject constructor(private val repository: TweetReposito
     init {
 
         viewModelScope.launch {
-            repository.getTweets("passion")
+            val category = saveStateHandle.get<String>("category")?: "vision"
+            repository.getTweets(category)
         }
     }
 }

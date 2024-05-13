@@ -13,6 +13,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.msid.tweetsy.api.TweetsApi
 import com.msid.tweetsy.screens.CategoryScreen
 import com.msid.tweetsy.screens.DetailScreen
@@ -33,25 +38,30 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            TweetsyTheme {
-                DetailScreen()
-            }
+                App()
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun App(){
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "category") {
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TweetsyTheme {
-        Greeting("Android")
+        composable(route = "category") {
+            CategoryScreen{
+                navController.navigate("detail/$it")
+            }
+        }
+
+        composable(route = "detail/{category}",
+            arguments = listOf(
+                navArgument("category"){
+                    type = NavType.StringType
+                }
+            )
+        ){
+            DetailScreen()
+        }
     }
 }
